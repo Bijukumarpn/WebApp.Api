@@ -27,8 +27,10 @@ namespace WebApp.Services.Repository
             await _context.SaveChangesAsync();
         }
 
-        public async Task<List<EmployeeResponseDto>> GetAllEmployeesAsync()
+        public async Task<Result<List<EmployeeResponseDto>>> GetAllEmployeesAsync()
         {
+            var result = new Result<List<EmployeeResponseDto>>();
+
             var employees = await (from emp in _context.EmployeeSet
                                    join dept in
                                    _context.DepartmentSet on emp.DeptId equals dept.DeptId
@@ -44,7 +46,14 @@ namespace WebApp.Services.Repository
                                        Email = emp.Email
                                    }).ToListAsync();
 
-            return employees;
+            if (employees == null || employees.Count == 0)
+            {
+                result.Errors.Add(new Errors { Id = 1, ErrorCode = 100, ErrorMessage = "No Employees Found" });
+            }
+
+            result.Response = employees;
+
+            return result;
         }
 
         public async Task<Employee> GetEmployeeByIdAsync(int id)

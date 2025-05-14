@@ -10,7 +10,7 @@ namespace WebApp.Services.Repository
 {
     public interface IEmployeeRepository
     {
-        Task<List<EmployeeResponseDto>> GetAllEmployeesAsync();
+        Task<Result<List<EmployeeResponseDto>>> GetAllEmployeesAsync();
         Task<Employee> GetEmployeeByIdAsync(int id);
         Task AddEmployeesAsync(Employee employee);
         Task UpdateEmployeesAsyc(Employee employee);

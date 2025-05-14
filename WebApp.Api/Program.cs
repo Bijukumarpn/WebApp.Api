@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using Serilog;
 using System.Text;
 using WebApp.Api.Handlers;
@@ -16,13 +17,37 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+
+builder.Services.AddSwaggerGen(c => {
+    c.AddSecurityDefinition("bearerAuth", new OpenApiSecurityScheme
+    {
+        Name = "Bearer", // or API Key name
+        Scheme = "bearer",
+        Type = SecuritySchemeType.Http,
+        In = ParameterLocation.Header,
+        Description = "JWT Auth: Bearer {token}" // or API key description
+    });
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type=ReferenceType.SecurityScheme,
+                    Id="bearer"
+                }
+            },
+            new string[]{}
+        }
+    });
+});
 
 builder.Services.AddDbContext<ApplicaitonDbContext>(options =>
                     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 builder.Services.AddScoped<IDepartmentRepository,DepartmentRespository>();
+builder.Services.AddScoped<ITokenRepository,TokenRespository>();
 
 var logger = new LoggerConfiguration()
   .ReadFrom.Configuration(builder.Configuration)

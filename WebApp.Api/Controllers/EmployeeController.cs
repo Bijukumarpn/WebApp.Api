@@ -39,17 +39,17 @@ namespace WebApp.Api.Controllers
             //{
             //    logger.LogError(ex.Message);               
             //}
-            if (!cache.TryGetValue(EmployeeCache, out List<EmployeeResponseDto> employeeData))
-            {
+            //if (!cache.TryGetValue(EmployeeCache, out List<EmployeeResponseDto> employeeData))
+            //{
                
-                employeeData = await repository.GetAllEmployeesAsync();
+               var  employeeData = await repository.GetAllEmployeesAsync();
 
-                var cacheEntryOptions = new MemoryCacheEntryOptions()
-                    .SetSlidingExpiration(TimeSpan.FromMinutes(5))
-                    .SetAbsoluteExpiration(TimeSpan.FromMinutes(10));
+                //var cacheEntryOptions = new MemoryCacheEntryOptions()
+                //    .SetSlidingExpiration(TimeSpan.FromMinutes(5))
+                //    .SetAbsoluteExpiration(TimeSpan.FromMinutes(10));
 
-                cache.Set(EmployeeCache, employeeData, cacheEntryOptions);
-            }
+                //cache.Set(EmployeeCache, employeeData, cacheEntryOptions);
+            //}
 
             return Ok(employeeData);
         }
